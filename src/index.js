@@ -2,7 +2,7 @@ import pgformat from 'pg-format';
 import array from 'postgres-array';
 
 const OIDS = {};
-const TYPES = {};
+const NAMES = {};
 
 let loaded = false;
 
@@ -28,7 +28,7 @@ export default function fetch(pg, connection, types, callback) {
 
       for (let row of result.rows) {
         OIDS[row.name] = +row.oid;
-        TYPES[+row.oid] = row.name;
+        NAMES[+row.oid] = row.name;
       }
 
       loaded = true;
@@ -38,8 +38,8 @@ export default function fetch(pg, connection, types, callback) {
   });
 }
 
-fetch.types = TYPES;
-fetch.ids = OIDS;
+fetch.names = NAMES;
+fetch.oids = OIDS;
 
 fetch.allowNull = function (parser) {
   return function (value) {
