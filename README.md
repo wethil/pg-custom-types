@@ -27,7 +27,7 @@ Callback is calleed with an object containing a lookup table.
 
 ```
 { 21842552: 'geometry',
-  21842762: 'geograph' }
+  21842762: 'geography' }
 ```
 
 ## Example
