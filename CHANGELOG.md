@@ -1,3 +1,6 @@
+# v1.0.1
+* Fix build
+
 # v1.0.0
 * Rename ids -> oids and types -> names
 

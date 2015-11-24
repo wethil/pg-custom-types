@@ -16,7 +16,7 @@ var _postgresArray2 = _interopRequireDefault(_postgresArray);
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 var OIDS = {};
-var TYPES = {};
+var NAMES = {};
 
 var loaded = false;
 
@@ -49,7 +49,7 @@ function fetch(pg, connection, types, callback) {
           var row = _step.value;
 
           OIDS[row.name] = +row.oid;
-          TYPES[+row.oid] = row.name;
+          NAMES[+row.oid] = row.name;
         }
       } catch (err) {
         _didIteratorError = true;
@@ -73,8 +73,8 @@ function fetch(pg, connection, types, callback) {
   });
 }
 
-fetch.types = TYPES;
-fetch.ids = OIDS;
+fetch.names = NAMES;
+fetch.oids = OIDS;
 
 fetch.allowNull = function (parser) {
   return function (value) {
