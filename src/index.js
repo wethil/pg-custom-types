@@ -12,7 +12,7 @@ export default function fetch(pg, connection, types, callback) {
   }
 
   let sql = 'SELECT oid, typname AS name FROM pg_type WHERE typname IN (%L)';
-  sql = pgformat(sql, Array.from(types));
+  sql = pgformat(sql, types);
 
   pg.connect(connection, (err, client, done) => {
     if (err) {
