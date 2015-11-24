@@ -26,7 +26,7 @@ function fetch(pg, connection, types, callback) {
   }
 
   var sql = 'SELECT oid, typname AS name FROM pg_type WHERE typname IN (%L)';
-  sql = (0, _pgFormat2.default)(sql, Array.from(types));
+  sql = (0, _pgFormat2.default)(sql, types);
 
   pg.connect(connection, function (err, client, done) {
     if (err) {
