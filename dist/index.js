@@ -18,11 +18,9 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 var OIDS = {};
 var NAMES = {};
 
-var loaded = false;
-
-function fetch(pg, connection, types, callback) {
-  if (loaded) {
-    return callback(null, OIDS);
+function fetch(pg, connection, set, types, callback) {
+  if (OIDS[set]) {
+    return callback(null, OIDS[set]);
   }
 
   var sql = 'SELECT oid, typname AS name FROM pg_type WHERE typname IN (%L)';
@@ -40,6 +38,9 @@ function fetch(pg, connection, types, callback) {
         return callback(err);
       }
 
+      OIDS[set] = {};
+      NAMES[set] = {};
+
       var _iteratorNormalCompletion = true;
       var _didIteratorError = false;
       var _iteratorError = undefined;
@@ -48,8 +49,8 @@ function fetch(pg, connection, types, callback) {
         for (var _iterator = result.rows[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
           var row = _step.value;
 
-          OIDS[row.name] = +row.oid;
-          NAMES[+row.oid] = row.name;
+          OIDS[set][row.name] = +row.oid;
+          NAMES[set][+row.oid] = row.name;
         }
       } catch (err) {
         _didIteratorError = true;
@@ -66,9 +67,7 @@ function fetch(pg, connection, types, callback) {
         }
       }
 
-      loaded = true;
-
-      callback(null, OIDS);
+      callback(null, OIDS[set]);
     });
   });
 }
