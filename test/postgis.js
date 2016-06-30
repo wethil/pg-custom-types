@@ -10,7 +10,7 @@ const POSTGIS_TYPES = ['geometry', 'geography'];
 
 describe('custom types', () => {
   it('fetches postgis types', function (done) {
-    pgtypes(pg, connection, POSTGIS_TYPES, (err, oids) => {
+    pgtypes(pg, connection, 'postgis', POSTGIS_TYPES, (err, oids) => {
       if (err) {
         return done(err);
       }
@@ -23,7 +23,7 @@ describe('custom types', () => {
   });
 
   it('fails to fetch non-existent types', function (done) {
-    pgtypes(pg, connection, ['bogustype'], (err, oids) => {
+    pgtypes(pg, connection, 'bogus', ['bogustype'], (err, oids) => {
       if (err) {
         return done(err);
       }

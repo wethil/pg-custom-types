@@ -1,3 +1,6 @@
+# v2.0.0
+* Add new `name` parameter to allow it to be called with different sets of types. Previously you could only call `types()` once and it always cached and returned whatever the first set of types was. This prevented multiple different modules or libraries of fetching different sets of custom types.
+
 # v1.0.2
 * Remove unnecessary usage of Array.from
 

@@ -4,11 +4,9 @@ import array from 'postgres-array';
 const OIDS = {};
 const NAMES = {};
 
-let loaded = false;
-
-export default function fetch(pg, connection, types, callback) {
-  if (loaded) {
-    return callback(null, OIDS);
+export default function fetch(pg, connection, set, types, callback) {
+  if (OIDS[set]) {
+    return callback(null, OIDS[set]);
   }
 
   let sql = 'SELECT oid, typname AS name FROM pg_type WHERE typname IN (%L)';
@@ -26,14 +24,15 @@ export default function fetch(pg, connection, types, callback) {
         return callback(err);
       }
 
+      OIDS[set] = {};
+      NAMES[set] = {};
+
       for (let row of result.rows) {
-        OIDS[row.name] = +row.oid;
-        NAMES[+row.oid] = row.name;
+        OIDS[set][row.name] = +row.oid;
+        NAMES[set][+row.oid] = row.name;
       }
 
-      loaded = true;
-
-      callback(null, OIDS);
+      callback(null, OIDS[set]);
     });
   });
 }
