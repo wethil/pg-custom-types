@@ -18,9 +18,8 @@ Fetches the OIDs for the given types.
 
 | parameter       | type               | description                                                                        |
 | --------------- | ------------------ | ---------------------------------------------------------------------------------- |
-| `pg`            | Object             | The pg object from `require('pg')`                                                 |
-| `connection`    | String             | The connection string to use when fetching the types                               |
-| `name`          | String             | A name for the given set of types, used to cache the results. It can be anything.  |
+| `fetcher`       | Object             | The query function of the form `function (sql, callback)`                          |
+| `key`           | String             | A name for the given set of types, used to cache the results. It can be anything.  |
 | `types`         | Array              | The array of data type names to fetch                                              |
 | `callback`      | Function           | The callback to call after the types are fetched                                   |
 
@@ -36,7 +35,7 @@ Callback is called with an object containing a lookup table.
 ```js
 var types = require('pg-custom-types');
 
-types(pg, connection, 'postgis', ['geometry', 'geography'], (err, oids) {
+types(types.fetcher(pg, connection), 'postgis', ['geometry', 'geography'], (err, oids) {
   if (err) {
     throw err;
   }

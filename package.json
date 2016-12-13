@@ -1,6 +1,6 @@
 {
   "name": "pg-custom-types",
-  "version": "2.2.0",
+  "version": "3.0.0",
   "description": "Custom data types for node-postgres",
   "homepage": "http://github.com/zhm/pg-custom-types",
   "main": "dist/index.js",

@@ -18,59 +18,71 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 var OIDS = {};
 var NAMES = {};
 
-function fetch(pg, connection, set, types, callback) {
-  if (OIDS[set]) {
-    return callback(null, OIDS[set]);
+function fetch(execute, uniqueKey, types, callback) {
+  if (OIDS[uniqueKey]) {
+    return callback(null, OIDS[uniqueKey]);
   }
 
   var sql = 'SELECT oid, typname AS name FROM pg_type WHERE typname IN (%L)';
   sql = (0, _pgFormat2.default)(sql, types);
 
-  pg.connect(connection, function (err, client, done) {
+  execute(sql, function (err, rows) {
     if (err) {
       return callback(err);
     }
 
-    client.query(sql, null, function (err, result) {
-      done();
+    OIDS[uniqueKey] = {};
+    NAMES[uniqueKey] = {};
 
+    var _iteratorNormalCompletion = true;
+    var _didIteratorError = false;
+    var _iteratorError = undefined;
+
+    try {
+      for (var _iterator = rows[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
+        var row = _step.value;
+
+        OIDS[uniqueKey][row.name] = +row.oid;
+        NAMES[uniqueKey][+row.oid] = row.name;
+      }
+    } catch (err) {
+      _didIteratorError = true;
+      _iteratorError = err;
+    } finally {
+      try {
+        if (!_iteratorNormalCompletion && _iterator.return) {
+          _iterator.return();
+        }
+      } finally {
+        if (_didIteratorError) {
+          throw _iteratorError;
+        }
+      }
+    }
+
+    callback(null, OIDS[uniqueKey]);
+  });
+}
+
+fetch.fetcher = function (pg, connection) {
+  return function (sql, callback) {
+    pg.connect(connection, function (err, client, done) {
       if (err) {
         return callback(err);
       }
 
-      OIDS[set] = {};
-      NAMES[set] = {};
+      client.query(sql, null, function (err, result) {
+        done();
 
-      var _iteratorNormalCompletion = true;
-      var _didIteratorError = false;
-      var _iteratorError = undefined;
-
-      try {
-        for (var _iterator = result.rows[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
-          var row = _step.value;
-
-          OIDS[set][row.name] = +row.oid;
-          NAMES[set][+row.oid] = row.name;
+        if (err) {
+          return callback(err);
         }
-      } catch (err) {
-        _didIteratorError = true;
-        _iteratorError = err;
-      } finally {
-        try {
-          if (!_iteratorNormalCompletion && _iterator.return) {
-            _iterator.return();
-          }
-        } finally {
-          if (_didIteratorError) {
-            throw _iteratorError;
-          }
-        }
-      }
 
-      callback(null, OIDS[set]);
+        callback(null, result.rows);
+      });
     });
-  });
-}
+  };
+};
 
 fetch.names = NAMES;
 fetch.oids = OIDS;
@@ -82,6 +94,14 @@ fetch.allowNull = function (parser) {
     }
     return parser(value);
   };
+};
+
+fetch.getTypeName = function (oid, key) {
+  return NAMES[key][+oid];
+};
+
+fetch.getTypeOID = function (name, key) {
+  return OIDS[key][name];
 };
 
 fetch.parseArray = function (parser) {
